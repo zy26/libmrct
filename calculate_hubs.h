@@ -26,8 +26,13 @@ std::vector<std::size_t> partial_sort_indexes(const std::vector<T> &v,
   for (std::size_t i = 0; i != idx.size(); ++i)
     idx[i] = i;
   // sort indexes based on comparing values in v
-  partial_sort(idx.begin(), idx.begin() + k, idx.end(),
-               [&v](std::size_t i1, std::size_t i2) { return v[i1] < v[i2]; });
+  if (v.size() > k)
+    partial_sort(
+        idx.begin(), idx.begin() + k, idx.end(),
+        [&v](std::size_t i1, std::size_t i2) { return v[i1] < v[i2]; });
+  else
+    sort(idx.begin(), idx.end(),
+         [&v](std::size_t i1, std::size_t i2) { return v[i1] < v[i2]; });
   return idx;
 }
 
@@ -138,7 +143,7 @@ std::vector<std::vector<int>> get_MR_EM(const IMatrix<T> &data,
   std::vector<std::unordered_map<int, int>> Rank_index(data.RowSize());
   std::vector<std::size_t> MR_id_count(data.RowSize(), 0);
 
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (int row1 = 0; row1 < static_cast<int>(data.RowSize()); row1++) {
     std::vector<double> cor_cc(data.RowSize());
     for (int row2 = 0; row2 < row1; row2++)
